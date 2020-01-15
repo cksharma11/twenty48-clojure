@@ -1,42 +1,42 @@
 (ns twenty48.core)
 
-(defn remove-zeroes [coll]
-  (filter pos? coll))
+(def board '((2 0 2 0)
+             (2 0 0 2)
+             (0 2 2 0)
+             (0 0 2 0)))
+
+(def remove-zeroes (partial filter pos?))
 
 (defn append-zeroes [size coll]
   (take size (concat coll (repeat 0))))
 
-(defn move-left-row [row]
-  (->> row
-       (remove-zeroes)
-       (partition-by identity)
-       (mapcat (partial partition-all 2))
-       (map (partial apply +))
-       (append-zeroes (count row))))
+(def move-left-row-without-zeroes
+  (comp
+    flatten
+    (partial conj (repeat 0))
+    (partial map (partial apply +))
+    (partial mapcat (partial partition-all 2))
+    (partial partition-by identity)
+    (partial remove-zeroes)))
 
-(defn move-board-left [board]
-  (map move-left-row board))
+(def move-left-row
+  (comp
+    (partial apply append-zeroes)
+    (juxt count move-left-row-without-zeroes)))
 
-(defn reverse-board [board]
-  (map reverse board))
+(def move-board-left (partial map move-left-row))
 
-(defn transpose [board]
-  (apply map list board))
+(def reverse-board (partial map reverse))
 
-(defn move-board-right [board]
-  (-> board
-      reverse-board
-      move-board-left
-      reverse-board))
+(def transpose (partial apply map list))
 
-(defn move-board-up [board]
-  (-> board
-      transpose
-      move-board-left
-      transpose))
+(def move-board-right (comp reverse-board move-board-left reverse-board))
 
-(defn move-board-down [board]
-  (-> board
-      transpose
-      move-board-right
-      transpose))
+(def move-board-up (comp transpose move-board-left transpose))
+
+(def move-board-down (comp transpose move-board-right transpose))
+
+(println (move-board-left board))
+(println (move-board-right board))
+(println (move-board-up board))
+(println (move-board-down board))
