@@ -1,10 +1,5 @@
 (ns twenty48.core)
 
-(def board '((2 0 2 0)
-             (2 0 0 2)
-             (0 2 2 0)
-             (0 0 2 0)))
-
 (def remove-zeroes (partial filter pos?))
 
 (defn append-zeroes [size coll]
@@ -12,8 +7,6 @@
 
 (def move-left-row-without-zeroes
   (comp
-    flatten
-    (partial conj (repeat 0))
     (partial map (partial apply +))
     (partial mapcat (partial partition-all 2))
     (partial partition-by identity)
@@ -35,8 +28,3 @@
 (def move-board-up (comp transpose move-board-left transpose))
 
 (def move-board-down (comp transpose move-board-right transpose))
-
-(println (move-board-left board))
-(println (move-board-right board))
-(println (move-board-up board))
-(println (move-board-down board))
